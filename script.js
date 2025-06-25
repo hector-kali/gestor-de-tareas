@@ -32,28 +32,39 @@ function renderTasks(filter = 'all') {
         ? tasks 
         : tasks.filter(task => task.status === filter);
 
-    filteredTasks.forEach((task, index) => {
+    filteredTasks.forEach(task => {
+        const realIndex = tasks.indexOf(task);
+
         const taskElement = document.createElement('div');
         taskElement.className = `task-item ${task.status === 'completed' ? 'completed' : ''}`;
-        
-        taskElement.innerHTML = `
-            <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''}>
-            <span>${task.text}</span>
-            <button class="delete-btn">Eliminar</button>
-        `;
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.status === 'completed';
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = task.text;
+
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-btn';
+        deleteButton.textContent = 'Eliminar';
 
         // Eventos de la tarea
-        taskElement.querySelector('input[type="checkbox"]').addEventListener('change', function() {
-            tasks[index].status = this.checked ? 'completed' : 'active';
+        checkbox.addEventListener('change', function() {
+            tasks[realIndex].status = this.checked ? 'completed' : 'active';
             saveTasks();
             renderTasks(filter);
         });
 
-        taskElement.querySelector('.delete-btn').addEventListener('click', () => {
-            tasks.splice(index, 1);
+        deleteButton.addEventListener('click', () => {
+            tasks.splice(realIndex, 1);
             saveTasks();
             renderTasks(filter);
         });
+
+        taskElement.appendChild(checkbox);
+        taskElement.appendChild(textSpan);
+        taskElement.appendChild(deleteButton);
 
         tasksList.appendChild(taskElement);
     });
